@@ -1,0 +1,25 @@
+{
+    "name": "im-machakata/codelsms",
+    "description": "PHP Bulk sms wrapper for Codel Sms",
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "simplehtmldom/simplehtmldom": "dev-master",
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "IsaacMachakata\\CodelSms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Isaac Machakata",
+            "email": "hie@isaac.co.zw"
+        }
+    ]
+}
