@@ -1,6 +1,6 @@
 <?php
 
-namespace IsaacMachakata\CodelSms\Constant;
+namespace IsaacMachakata\CodelSms\Exception;
 
 class InvalidPhoneNumber extends \Exception
 {
