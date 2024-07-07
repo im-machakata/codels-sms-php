@@ -23,9 +23,9 @@ class Sms
      * @param string|null $reference
      * @param string|null $timestamp
      * @param string $validity
-     * @return array
+     * @return self
      */
-    public static function new(string $destination, string $message, ?string $reference = null, string $timestamp = null, string $validity = '03:00')
+    public static function new(string $destination, string $message, ?string $reference = null, string $timestamp = null, string $validity = '03:00'): self
     {
         // make sure optional variables are populated
         if (empty($timestamp)) $timestamp = strtotime('+5 seconds');
@@ -38,8 +38,8 @@ class Sms
         self::$validity = $validity;
         self::$message = $message;
 
-        // return data as json
-        return self::toArray();
+        // return instance
+        return new Sms;
     }
 
     /**
@@ -47,7 +47,7 @@ class Sms
      *
      * @return array
      */
-    private static function toArray()
+    public static function toArray()
     {
         return [
             'destination' => self::$destination,

@@ -10,13 +10,13 @@ class SmsTest extends TestCase
     public function testSmsIsArray()
     {
         $sms = Sms::new("263771000000", "Hello world!", '#ref1');
-        $this->assertIsArray($sms);
+        $this->assertIsArray($sms->toArray());
     }
     #[DataProvider('addTestArrayKeys')]
     public function testSmsHasKey(string $key)
     {
         $sms = Sms::new("263771000000", "Hello world!");
-        $this->assertArrayHasKey($key, $sms);
+        $this->assertArrayHasKey($key, $sms->toArray());
     }
     public static function addTestArrayKeys(): array
     {
@@ -32,7 +32,7 @@ class SmsTest extends TestCase
     #[DataProvider('addValidTestPhoneNumbers')]
     public function testValidPhoneNumberIsFormatted(string $phone)
     {
-        $sms = Sms::new($phone, "Hello world!");
+        $sms = Sms::new($phone, "Hello world!")->toArray();
         $this->assertEquals('263771000000', $sms['destination']);
     }
     public static function addValidTestPhoneNumbers(): array
