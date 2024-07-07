@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use IsaacMachakata\CodelSms\BulkSmsApi;
-use IsaacMachakata\CodelSms\BulkSmsException;
+use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class BulkSmsApiTest extends TestCase
@@ -15,7 +15,7 @@ class BulkSmsApiTest extends TestCase
     #[DataProvider('setEmptyConfigValues')]
     public function testEmptyConfigurationsThrowsErrors($config)
     {
-        $this->expectException(BulkSmsException::class);
+        $this->expectException(MalformedConfigException::class);
         new BulkSmsApi($config);
     }
     public static function setConfigValues(): array
