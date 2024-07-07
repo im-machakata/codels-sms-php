@@ -12,3 +12,22 @@ To install and use this library, you'll need to have composer installed. After t
 ```sh
 composer require im-machakata/codelsms
 ```
+
+## Usage 
+
+Initialize an sms instance as follows:
+
+```php
+use IsaacMachakata\CodelSms\Sms;
+use IsaacMachakata\CodelSms\Client;
+
+$client =  new Client($apiToken);
+$sms = Sms::new('263771000000','Your message goes here...');
+
+// get response
+$response = $client->send($sms);
+if($response->isOk()){
+    // Sip some coffee
+} else {
+    // Scratch your head
+}
