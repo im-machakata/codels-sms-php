@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use IsaacMachakata\CodelSms\Sms;
 use PHPUnit\Framework\Attributes\DataProvider;
+use IsaacMachakata\CodelSms\Exception\InvalidPhoneNumber;
 
 class SmsTest extends TestCase
 {
@@ -41,6 +42,19 @@ class SmsTest extends TestCase
             ['0771000000'],
             ['263771000000'],
             ['+263771000000'],
+        ];
+    }
+    #[DataProvider('addInvalidTestPhoneNumbers')]
+    public function testInvalidPhoneNumberThrowsErrors(string $phone)
+    {
+        $this->expectException(InvalidPhoneNumber::class);
+        $sms = Sms::new($phone, "Hello world!");
+    }
+    public static function addInvalidTestPhoneNumbers(): array
+    {
+        return [
+            ['77100000'],
+            ['+2637710000000'],
         ];
     }
 }
