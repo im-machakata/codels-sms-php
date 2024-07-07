@@ -32,7 +32,7 @@ class Sms
         if (empty($reference)) $reference = uniqid();
 
         // set values to the properties
-        self::$destination = $destination;
+        self::$destination = Utils::formatNumber($destination);
         self::$timestamp = $timestamp;
         self::$reference = $reference;
         self::$validity = $validity;
