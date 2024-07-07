@@ -1,10 +1,11 @@
-<?php 
+<?php
 
 namespace IsaacMachakata\CodelSms;
 
 use IsaacMachakata\CodelSms\Constant\InvalidPhoneNumber;
 
-class Utils {
+class Utils
+{
 
     public static function formatNumber(string $destination)
     {
@@ -22,7 +23,7 @@ class Utils {
             $destination = "263" . $destination;
         }
 
-        if (strlen($destination) > 13) {
+        if (strlen($destination) > 13 || strlen($destination) < 9) {
             throw new InvalidPhoneNumber('Phone number is invalid. Make sure it is of the format: 263...');
         }
 
