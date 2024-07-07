@@ -12,7 +12,7 @@ class Utils {
             $destination = str_replace('+', '', $destination);
         }
 
-        if (strlen($destination) == 10 && str_starts_with($destination, '0')) {
+        if (strlen($destination) == 10) {
             $destination = str_split($destination);
             unset($destination[0]);
             $destination = implode($destination);
