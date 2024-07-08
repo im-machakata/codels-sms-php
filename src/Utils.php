@@ -7,6 +7,13 @@ use IsaacMachakata\CodelSms\Exception\InvalidPhoneNumber;
 class Utils
 {
 
+    /**
+     * Formats the provided phone number to the accepted system format.
+     *
+     * @param string $destination
+     * @throws InvalidPhoneNumber
+     * @return string
+     */
     public static function formatNumber(string $destination)
     {
         if (str_starts_with($destination, '+')) {
