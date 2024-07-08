@@ -5,11 +5,14 @@ namespace IsaacMachakata\CodelSms;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use IsaacMachakata\CodelSms\Interface\ClientInterface;
-use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 use IsaacMachakata\CodelSms\Interface\ResponseInterface;
+use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 
 /**
- * Undocumented class
+ * Allows you to send sms's from your PHP app.
+ * @throws MalformedConfigException
+ * @method function send(Sms $sms)
+ * @final
  */
 final class Client implements ClientInterface
 {
