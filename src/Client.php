@@ -3,6 +3,7 @@
 namespace IsaacMachakata\CodelSms;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use IsaacMachakata\CodelSms\Interface\ClientInterface;
 use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 use IsaacMachakata\CodelSms\Interface\ResponseInterface;
@@ -73,6 +74,14 @@ final class Client implements ClientInterface
     {
         return is_string($this->config);
     }
+
+    /**
+     * Processes configurations and sends a single message
+     *
+     * @param Sms $sms
+     * @throws \Exception
+     * @return GuzzleResponse
+     */
     private function sendSingleMessage(Sms $sms)
     {
         if (!$this->configIsToken()) {
