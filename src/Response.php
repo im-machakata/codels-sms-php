@@ -24,6 +24,10 @@ class Response implements ResponseInterface
     {
         return !empty($this->responseBody) ? $this->responseBody->status : 'FAILED';
     }
+    public function getMessageId(): string|null
+    {
+        return !empty($this->responseBody) ? $this->responseBody->messageId : null;
+    }
     public function isOk(): bool
     {
         return $this->getMessageStatus() != "FAILED";
