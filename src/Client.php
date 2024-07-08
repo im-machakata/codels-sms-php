@@ -35,14 +35,7 @@ final class Client implements ClientInterface
      */
     public function send(Sms $sms): ResponseInterface
     {
-        if (!$this->configIsToken()) {
-            throw new \Exception('Method not yet supported! Please use API Token.');
-        }
-
-        $response = $this->client->request('POST', Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT, [
-            ...$sms->toArray(),
-            'token' => $this->config
-        ]);
+        $response = $this->sendSingleMessage($sms);
         return new Response($response);
     }
     private function processConfigurations()
@@ -74,13 +67,16 @@ final class Client implements ClientInterface
     {
         return is_string($this->config);
     }
-    private function sendSingleMessage()
+    private function sendSingleMessage(Sms $sms)
     {
-        if ($this->configIsToken()) {
-
-            return $this->client->request('POST', Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT, [
-                // 
-            ]);
+        if (!$this->configIsToken()) {
+            throw new \Exception('Method not yet supported! Please use API Token.');
         }
+
+        $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
+        return $this->client->post($uri, [
+            ...$sms->toArray(),
+            'token' => $this->config
+        ]);
     }
 }
