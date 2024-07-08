@@ -92,9 +92,12 @@ final class Client implements ClientInterface
         }
 
         $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
-        return $this->client->post($uri, array(), [
-            ...$sms->toArray(),
-            'token' => $this->config
+        return $this->client->request('POST', $uri, [
+            // "headers" => [],
+            'form_params' => [
+                ...$sms->toArray(),
+                'token' => $this->config
+            ]
         ]);
     }
 }
