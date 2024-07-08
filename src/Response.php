@@ -28,6 +28,10 @@ class Response implements ResponseInterface
     {
         return !empty($this->responseBody) ? $this->responseBody->messageId : null;
     }
+    public function messageIsScheduled(): bool
+    {
+        return !empty($this->responseBody) ? $this->responseBody->scheduled : false;
+    }
     public function isOk(): bool
     {
         return $this->getMessageStatus() != "FAILED";
