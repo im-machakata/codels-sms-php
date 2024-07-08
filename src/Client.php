@@ -38,6 +38,12 @@ final class Client implements ClientInterface
         $response = $this->sendSingleMessage($sms);
         return new Response($response);
     }
+
+    /**
+     * Checks if provided configurations matche the expected format
+     * @throws MalformedConfigException
+     * @return void
+     */
     private function processConfigurations()
     {
         if (!is_array($this->config) && !is_string($this->config)) {
