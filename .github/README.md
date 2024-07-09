@@ -1,3 +1,5 @@
+[![CI Test Package](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml/badge.svg)](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml)
+
 # Codel Bulk Sms (Un-Official)
 This is an **unofficial** package for the [codel](https://codel.co.zw) bulk sms (also known as [2waychat.com](https://2waychat.com)).
 
