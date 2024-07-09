@@ -1,0 +1,20 @@
+name: CI Test Package
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: php-actions/composer@v6
+
+      - name: Test Package
+        uses: php-actions/phpunit@master
+        with:
+          version: 9.6
+          bootstrap: vendor/autoload.php
+          configuration: phpunit.xml
+          args: --no-coverage --testdox
