@@ -14,7 +14,7 @@ jobs:
       - name: Test Package
         uses: php-actions/phpunit@master
         with:
-          version: 9.6
+          version: 11.2
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
           args: --no-coverage --testdox
