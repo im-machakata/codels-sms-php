@@ -1,9 +1,9 @@
 # Codel Bulk Sms (Un-Official)
-This is an **unofficial** package for the [codel](codel.co.zw) bulk sms (also known as [2waychat.com](2waychat.com)).
+This is an **unofficial** package for the [codel](https://codel.co.zw) bulk sms (also known as [2waychat.com](https://2waychat.com)).
 
 ## How it works
 
-This version interacts with the [Codel Sms API](2waychat.com) and does not provide any additional functions.
+This version interacts with the [Codel Sms API](https://2waychat.com) and does not provide any additional functions.
 
 ## Installation 
 
