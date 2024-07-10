@@ -1,5 +1,5 @@
 {
-    "name": "im-machakata/codelsms",
+    "name": "immachakata/codelsms",
     "description": "PHP Bulk sms wrapper for Codel Sms",
     "type": "library",
     "require": {
