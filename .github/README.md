@@ -12,7 +12,7 @@ This version interacts with the [Codel Sms API](https://2waychat.com) and does n
 To install and use this library, you'll need to have composer installed. After that, you can install this library with the following composer command:
 
 ```sh
-composer require im-machakata/codelsms
+composer require immachakata/codelsms
 ```
 
 ## Usage 
