@@ -1,3 +1,6 @@
+[![Latest Stable Version](http://poser.pugx.org/immachakata/codelsms/v)](https://packagist.org/packages/immachakata/codelsms)
+[![Total Downloads](http://poser.pugx.org/immachakata/codelsms/downloads)](https://packagist.org/packages/immachakata/codelsms)
+[![License](http://poser.pugx.org/immachakata/codelsms/license)](https://packagist.org/packages/immachakata/codelsms)
 [![CI Test Package](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml/badge.svg)](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml)
 
 # Codel Bulk Sms (Un-Official)
