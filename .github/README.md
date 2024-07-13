@@ -1,7 +1,7 @@
-[![Latest Stable Version](http://poser.pugx.org/immachakata/codelsms/v)](https://packagist.org/packages/immachakata/codelsms)
-[![Total Downloads](http://poser.pugx.org/immachakata/codelsms/downloads)](https://packagist.org/packages/immachakata/codelsms)
-[![License](http://poser.pugx.org/immachakata/codelsms/license)](https://packagist.org/packages/immachakata/codelsms)
 [![CI Test Package](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml/badge.svg)](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml)
+![Packagist Version](https://img.shields.io/packagist/v/immachakata/codelsms)
+![Packagist Downloads](https://img.shields.io/packagist/dt/immachakata/codelsms)
+![Packagist License](https://img.shields.io/packagist/l/immachakata/codelsms)
 
 # Codel Bulk Sms (Un-Official)
 This is an **unofficial** package for the [codel](https://codel.co.zw) bulk sms (also known as [2waychat.com](https://2waychat.com)).
