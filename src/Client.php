@@ -104,15 +104,13 @@ final class Client implements ClientInterface
 
         $requests = function ($total) use ($sms, $uri) {
             foreach ($sms as $message) {
-                yield function () use ($message, $uri) {
-                    return $this->client->requestAsync('POST', $uri, [
-                        // 'headers' => [],
-                        'json' => [
-                            ...$message->toArray(),
-                            'token' => $this->config,
-                        ],
-                    ]);
-                };
+                yield $this->client->requestAsync('POST', $uri, [
+                    // 'headers' => [],
+                    'json' => [
+                        ...$message->toArray(),
+                        'token' => $this->config,
+                    ],
+                ]);
             }
         };
 
