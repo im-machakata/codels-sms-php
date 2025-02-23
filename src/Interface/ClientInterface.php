@@ -6,5 +6,8 @@ use IsaacMachakata\CodelSms\Sms;
 
 interface ClientInterface
 {
-    public function send(Sms $sms): ResponseInterface;
+    /**
+     * @param Sms|array<Sms> $sms
+     */
+    public function send(Sms|array $sms): array;
 }
