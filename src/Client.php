@@ -2,6 +2,7 @@
 
 namespace IsaacMachakata\CodelSms;
 
+use GuzzleHttp\Pool;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use IsaacMachakata\CodelSms\Interface\ClientInterface;
@@ -35,12 +36,11 @@ final class Client implements ClientInterface
     /**
      * Makes a request to the server and tries to send the message.
      *
-     * @return Response
+     * @return array
      */
-    public function send(Sms $sms): ResponseInterface
+    public function send(Sms|array $sms): array
     {
-        $response = $this->sendSingleMessage($sms);
-        return new Response($response);
+        return $this->sendMessages($sms);
     }
 
     /**
@@ -81,23 +81,91 @@ final class Client implements ClientInterface
     /**
      * Processes configurations and sends a single message
      *
-     * @param Sms $sms
+     * @param Sms|array<Sms> $sms
      * @throws \Exception
-     * @return GuzzleResponse
+     * @return array
      */
-    private function sendSingleMessage(Sms $sms)
+    private function sendMessages(Sms|array $sms, callable $callback = null)
     {
         if (!$this->configIsToken()) {
             throw new \Exception('Method not yet supported! Please use API Token.');
         }
-
+        $successfulSends = 0;
+        $failedSends = 0;
+        $allResponses = [];
         $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
-        return $this->client->request('POST', $uri, [
-            // "headers" => [],
-            'json' => [
-                ...$sms->toArray(),
-                'token' => $this->config
-            ]
+        if (!is_array($sms)) {
+            $sms = [$sms];
+        }
+
+        if (empty($sms)) {
+            throw new \Exception('Message can not be empty.');
+        }
+
+        $requests = function ($total) use ($sms, $uri) {
+            foreach ($sms as $message) {
+                yield function () use ($message, $uri) {
+                    return $this->client->requestAsync('POST', $uri, [
+                        // 'headers' => [],
+                        'json' => [
+                            ...$message->toArray(),
+                            'token' => $this->config,
+                        ],
+                    ]);
+                };
+            }
+        };
+
+
+        $pool = new Pool($this->client, $requests(count($sms)), [
+            'concurrency' => 4,
+            'fulfilled' => function (GuzzleResponse $response, $index) use ($sms, $callback, &$successfulSends, &$failedSends, &$allResponses) {
+                // Type hint $response
+                $message = $sms[$index];
+                $body = $response->getBody();
+                $responseData = json_decode($body, true);
+
+                if (is_callable($callback)) {
+                    $callback($message, $responseData, null);
+                }
+                $allResponses[] = ['message' => $message, 'response' => $responseData, 'status' => 'success'];
+                // Store the data
+
+                if (is_callable($callback)) {
+                    $callback($message, $responseData, null);
+                }
+        
+                $successfulSends++;
+            },
+            'rejected' => function ($reason, $index) use ($sms, $callback, &$successfulSends, &$failedSends, &$allResponses) {
+                $message = $sms[$index];
+                $errorMessage = $reason->getMessage();
+
+                if (is_callable($callback)) {
+                    $callback($message, null, $errorMessage);
+                }
+                $allResponses[] = ['message' => $message, 'error' => $errorMessage, 'status' => 'failed']; // Store the data
+
+                if (is_callable($callback)) {
+                    $callback($message, null, $errorMessage);
+                }
+        
+                $failedSends++;
+            },
         ]);
+
+        $promise = $pool->promise();
+        $promise->wait();
+        
+        $totalSends = count($sms);
+        $overallStatus = ($failedSends === 0) ? 'success' : 'partial'; // Or 'failed' if all failed
+        
+        return [
+            'status' => $overallStatus,
+            'total_messages' => $totalSends,
+            'successful_messages' => $successfulSends,
+            'failed_messages' => $failedSends,
+            'responses' => $allResponses, // Include details of each message
+        ];
     }
 }
