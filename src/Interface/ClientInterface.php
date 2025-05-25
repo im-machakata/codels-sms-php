@@ -9,5 +9,5 @@ interface ClientInterface
     /**
      * @param Sms|array<Sms> $sms
      */
-    public function send(Sms|array $sms): array;
+    public function send(Sms|array $sms): ResponseInterface;
 }
