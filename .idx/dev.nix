@@ -46,7 +46,7 @@
       onStart = {
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
-        install = "composer install";
+        install = "composer install && git config --global user.name 'Isaac Machakata' && git config --global user.email 'hie@isaac.co.zw'";
       };
     };
   };
