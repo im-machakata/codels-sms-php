@@ -22,11 +22,16 @@ final class Client //implements ClientInterface
     /**
      * @param string|array $config
      */
-    function __construct($config = null)
+    function __construct($config = null, ?string $senderID = null)
     {
         $this->config = $config;
         $this->client = new GuzzleClient();
         $this->processConfigurations();
+
+        // set sender id if not empty
+        if (!is_null($senderID)) {
+            $this->setSenderId($senderID);
+        }
     }
 
     public function setSenderId(string $senderID)
