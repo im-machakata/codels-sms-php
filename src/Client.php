@@ -20,9 +20,9 @@ final class Client //implements ClientInterface
     protected Sms $message;
 
     /**
-     * @param string|array $config
+     * @param string $config
      */
-    function __construct($config = null, ?string $senderID = null)
+    function __construct(?string $config = null, ?string $senderID = null)
     {
         $this->config = $config;
         $this->client = new GuzzleClient();
@@ -52,7 +52,8 @@ final class Client //implements ClientInterface
     /**
      * Makes a request to the server and tries to send the message.
      * @param string|array|Sms $receivers
-     * @param string|array $messages     * @return Response
+     * @param string|array $messages     
+     * @return Response
      */
     public function send(string|array|Sms $receivers, $messages = null): Response
     {
@@ -99,25 +100,8 @@ final class Client //implements ClientInterface
      */
     private function processConfigurations()
     {
-        if (!is_array($this->config) && !is_string($this->config)) {
-            throw new MalformedConfigException("Invalid configurations: Config should be an API Key or an array with username & password");
-        }
-
-        if (is_array($this->config)) {
-            if (!isset($this->config['username']) || empty($this->config['username'])) {
-                throw new MalformedConfigException("Username can not be empty");
-            }
-            if (!isset($this->config['password']) || empty($this->config['password'])) {
-                throw new MalformedConfigException("Password can not be empty");
-            }
-        }
-
-        if (is_string($this->config) && empty($this->config)) {
-            throw new MalformedConfigException('API Key can not be empty.');
-        }
-
-        if (!$this->configIsToken()) {
-            throw new MalformedConfigException('Please use API Token instead.');
+        if (!$this->configIsToken() || empty($this->config)) {
+            throw new MalformedConfigException('Please provide an API Token for authentication.');
         }
     }
 
