@@ -113,7 +113,7 @@ final class Client //implements ClientInterface
         }
 
         if (!$this->configIsToken()) {
-            throw new \Exception('Method not yet supported! Please use API Token.');
+            throw new MalformedConfigException('Please use API Token instead.');
         }
     }
 

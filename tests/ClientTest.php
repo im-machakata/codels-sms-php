@@ -12,8 +12,8 @@ class ClientTest extends TestCase
     {
         $this->assertIsObject(new Client($config));
     }
-    #[DataProvider('setEmptyConfigValues')]
-    public function testEmptyConfigurationsThrowsErrors($config)
+    #[DataProvider('invalidConfigValues')]
+    public function testInvalidConfigurationsThrowsErrors($config)
     {
         $this->expectException(MalformedConfigException::class);
         new Client($config);
@@ -22,16 +22,16 @@ class ClientTest extends TestCase
     {
         return [
             ['a-valid-api-token-key'],
-            [array('username' => 'admin', 'password' => 'supersecret')],
         ];
     }
-    public static function setEmptyConfigValues(): array
+    public static function invalidConfigValues(): array
     {
         return [
             [''],
             [array()],
             [array('username' => 'admin')],
             [array('username' => 'supersecret')],
+            [array('username' => 'admin', 'password' => 'supersecret')],
         ];
     }
 }
