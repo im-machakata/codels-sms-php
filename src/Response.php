@@ -8,7 +8,7 @@ use IsaacMachakata\CodelSms\Interface\ResponseInterface;
 class Response implements ResponseInterface
 {
     private Psr7Response $response;
-    private object $responseBody;
+    private object|array $responseBody;
     private bool $bulkMessages;
     public function __construct(Psr7Response $response, bool $bulk = false)
     {
