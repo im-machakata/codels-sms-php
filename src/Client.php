@@ -8,7 +8,6 @@ use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 /**
  * Allows you to send sms's from your PHP app.
  * @throws MalformedConfigException
- * @method function send(Sms $sms)
  * @final
  */
 final class Client //implements ClientInterface
@@ -16,7 +15,7 @@ final class Client //implements ClientInterface
     private GuzzleClient $client;
     private array|string $config;
     protected string $receivers;
-    protected string $senderID;
+    protected string $senderID = '';
     protected $templateCallback;
     protected Sms $message;
 
@@ -116,20 +115,20 @@ final class Client //implements ClientInterface
         return is_string($this->config);
     }
 
-    private function sendMessages(string|array $receivers, string|array $sms)
+    private function sendMessages(string|array $receivers, string|array $messages)
     {
-        if (empty($sms)) {
+        if (empty($messages)) {
             throw new \Exception('Message can not be empty.');
         }
 
         if (is_string($receivers)) {
-            return $this->sendSingleMessage($receivers, $sms);
+            return $this->sendSingleMessage($receivers, $messages);
         }
 
         // check if we're sending one message to multiple users
         // or different messages to different users
-        if (is_array($receivers) && is_array($sms)) {
-            if (count($receivers) != count($sms)) {
+        if (is_array($receivers) && is_array($messages)) {
+            if (count($receivers) != count($messages)) {
                 throw new \Exception('Number of receivers and messages do not match.');
             }
         }
@@ -148,7 +147,7 @@ final class Client //implements ClientInterface
      */
     private function sendSingleMessage(string $receiver, string $message)
     {
-        if (empty($sms)) {
+        if (empty($message)) {
             throw new \Exception('Message can not be empty.');
         }
 
@@ -156,7 +155,7 @@ final class Client //implements ClientInterface
             ...Sms::new($receiver, $message)->toArray(),
             'token' => $this->config,
         ];
-        if ($this->senderID) {
+        if (!empty($this->senderID)) {
             $requestJson['sender_id'] = $this->senderID;
         }
         $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
@@ -177,10 +176,6 @@ final class Client //implements ClientInterface
      */
     private function sendBulkMessages(string|array $messages)
     {
-        if (!$this->configIsToken()) {
-            throw new \Exception('Method not yet supported! Please use API Token.');
-        }
-
         if (empty($sms)) {
             throw new \Exception('Message can not be empty.');
         }
