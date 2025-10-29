@@ -51,11 +51,18 @@ final class Client //implements ClientInterface
 
     /**
      * Makes a request to the server and tries to send the message.
-     *
+     * @param string|array|Sms $receivers
+     * @param string|array $messages
      * @return Response
      */
-    public function send(string|array $receivers, array|string $messages): Response
+    public function send(string|array|Sms $receivers, $messages = null): Response
     {
+        // if instance of Sms passed, break data
+        if ($receivers instanceof Sms) {
+            $data = $receivers->toArray();
+            $messages = $data['messageText'];
+            $receivers = $data['destination'];
+        }
         return $this->sendMessages($receivers, $messages);
     }
 
@@ -181,15 +188,23 @@ final class Client //implements ClientInterface
      */
     private function sendBulkMessages(string|array $messages)
     {
-        if (empty($sms)) {
+        if (empty($messages)) {
             throw new \Exception('Message can not be empty.');
         }
 
         $requestJson = [
-            ...$sms->toArray(),
-            'token' => $this->config,
+            'auth' => [
+                'token' => $this->config,
+            ],
+            'payload' => [
+                'batchNumber' => uniqid(),
+                'messages' => $messages,
+            ]
         ];
-        if ($this->senderID) $requestJson['sender_id'] = $this->senderID;
+        if (!empty($this->senderID)) {
+            $requestJson['auth']['sender_id'] = $this->senderID;
+        }
+
         $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
         $response = $this->client->request('post', $uri, [
             'headers' => [
