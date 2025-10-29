@@ -1,3 +1,4 @@
 vendor
 phpunit
 .phpunit.cache
+index.php
