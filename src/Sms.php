@@ -25,18 +25,23 @@ class Sms
      * @param string $validity
      * @return self
      */
-    public static function new(string $destination, string $message, ?string $reference = null, ?string $timestamp = null, ?string $validity = '03:00'): self
+    public static function new(string $destination, ?string $message = null, ?string $reference = null, ?string $timestamp = null, ?string $validity = '03:00'): self
     {
         // make sure optional variables are populated
         if (empty($timestamp)) $timestamp = time();
         if (empty($reference)) $reference = uniqid();
 
         // set values to the properties
-        self::$destination = Utils::formatNumber($destination);
+        if (!empty($message)) {
+            self::$message = $message;
+            self::$destination = Utils::formatNumber($destination);
+        } else {
+            self::$message = $destination;
+            self::$destination = "";
+        }
         self::$timestamp = $timestamp;
         self::$reference = $reference;
         self::$validity = $validity;
-        self::$message = $message;
 
         // return instance
         return new Sms;

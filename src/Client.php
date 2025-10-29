@@ -52,8 +52,7 @@ final class Client //implements ClientInterface
     /**
      * Makes a request to the server and tries to send the message.
      * @param string|array|Sms $receivers
-     * @param string|array $messages
-     * @return Response
+     * @param string|array $messages     * @return Response
      */
     public function send(string|array|Sms $receivers, $messages = null): Response
     {
@@ -62,6 +61,11 @@ final class Client //implements ClientInterface
             $data = $receivers->toArray();
             $messages = $data['messageText'];
             $receivers = $data['destination'];
+        }
+
+        if ($messages instanceof Sms) {
+            $data = $messages->toArray();
+            $messages = $data['messageText'];
         }
         return $this->sendMessages($receivers, $messages);
     }
@@ -130,7 +134,12 @@ final class Client //implements ClientInterface
     private function sendMessages(string|array $receivers, string|array $messages)
     {
         if (empty($messages)) {
-            throw new \Exception('Message can not be empty.');
+            throw new \Exception('Message(s) can not be empty.');
+        }
+
+        // check if receivers is comma separated
+        if (is_string($receivers) && is_int(strpos($receivers, ','))) {
+            $receivers = explode(',', $receivers);
         }
 
         if (is_string($receivers)) {
@@ -184,34 +193,66 @@ final class Client //implements ClientInterface
      *
      * @param Sms $sms
      * @throws \Exception
-     * @return Response
      */
-    private function sendBulkMessages(string|array $messages)
+    private function sendBulkMessages(array $receivers, string|array $messages)
     {
         if (empty($messages)) {
             throw new \Exception('Message can not be empty.');
         }
 
+        if (is_array($messages) && (count($receivers) !== count($messages))) {
+            throw new \Exception('Number of receivers and messages do not match.');
+        }
+
         $requestJson = [
             'auth' => [
                 'token' => $this->config,
+                'senderID' => $this->senderID
             ],
             'payload' => [
                 'batchNumber' => uniqid(),
-                'messages' => $messages,
+                'messages' => [],
             ]
         ];
-        if (!empty($this->senderID)) {
-            $requestJson['auth']['sender_id'] = $this->senderID;
-        }
 
-        $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
+        // create sms objects for all messages
+        $smsObjects = [];
+        foreach ($receivers as $index => $receiver) {
+            // sometimes the message can be a string
+            if (is_string($messages)) {
+                $message = $messages;
+
+                // sometimes the message can be an array of messages, indexed by phone no
+            } else if (is_array($messages) && !array_is_list($messages)) {
+                $message = $messages[$receiver];
+
+                // sometimes the message can be an array of messages, indexed by index
+            } else if (is_array($messages) && array_is_list($messages)) {
+                $message = $messages[$index];
+            }
+
+            if ($this->templateCallback) {
+                // callback function should return an Sms instance
+                $smsObject = call_user_func($this->templateCallback, $receiver, $message);
+
+                if ($smsObject instanceof Sms) {
+                    $smsObjects[] = $smsObject->toArray();
+                } else {
+                    throw new \Exception('Callback function should return an Sms instance.');
+                }
+            } else {
+                $smsObjects[] = Sms::new($receiver, $message)->toArray();
+            }
+        }
+        $requestJson['payload']['messages'] = $smsObjects;
+
+        $uri = Urls::BASE_URL . Urls::MULTIPLE_SMS_ENDPOINT;
         $response = $this->client->request('post', $uri, [
             'headers' => [
                 'Accept' => 'application/json'
             ],
             'json' => $requestJson,
         ]);
-        return new Response($response);
+        return new Response($response, true);
     }
 }
