@@ -2,11 +2,7 @@
 
 namespace IsaacMachakata\CodelSms;
 
-use GuzzleHttp\Pool;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Response as GuzzleResponse;
-use IsaacMachakata\CodelSms\Interface\ClientInterface;
-use IsaacMachakata\CodelSms\Interface\ResponseInterface;
 use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 
 /**
@@ -15,12 +11,13 @@ use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
  * @method function send(Sms $sms)
  * @final
  */
-final class Client implements ClientInterface
+final class Client //implements ClientInterface
 {
     private GuzzleClient $client;
     private array|string $config;
     protected string $receivers;
     protected string $senderID;
+    protected $templateCallback;
     protected Sms $message;
 
     /**
@@ -33,14 +30,51 @@ final class Client implements ClientInterface
         $this->processConfigurations();
     }
 
+    public function setSenderId(string $senderID)
+    {
+        $this->senderID = $senderID;
+        return $this;
+    }
+
+    /**
+     * @param callable $templateCallback
+     */
+    public function setCallback(callable $templateCallback)
+    {
+        $this->templateCallback = $templateCallback;
+        return $this;
+    }
+
     /**
      * Makes a request to the server and tries to send the message.
      *
      * @return Response
      */
-    public function send(Sms|array $sms): Response
+    public function send(string|array $receivers, array|string $messages): Response
     {
-        return $this->sendMessages($sms);
+        return $this->sendMessages($receivers, $messages);
+    }
+
+    /**
+     * Gets the current credit balance for the account.
+     * @return int|object
+     */
+    public function getBalance()
+    {
+        $uri = Urls::BASE_URL . Urls::BALANCE_ENDPOINT;
+        $response = $this->client->request('post', $uri, [
+            'headers' => [
+                'Accept' => 'application/json'
+            ],
+            'json' => [
+                'token' => $this->config,
+            ],
+        ]);
+
+        if ($response->getStatusCode() == 200) {
+            return (int) json_decode($response->getBody())->sms_credit_balance;
+        }
+        return json_decode($response->getBody());
     }
 
     /**
@@ -66,6 +100,10 @@ final class Client implements ClientInterface
         if (is_string($this->config) && empty($this->config)) {
             throw new MalformedConfigException('API Key can not be empty.');
         }
+
+        if (!$this->configIsToken()) {
+            throw new \Exception('Method not yet supported! Please use API Token.');
+        }
     }
 
     /**
@@ -78,6 +116,58 @@ final class Client implements ClientInterface
         return is_string($this->config);
     }
 
+    private function sendMessages(string|array $receivers, string|array $sms)
+    {
+        if (empty($sms)) {
+            throw new \Exception('Message can not be empty.');
+        }
+
+        if (is_string($receivers)) {
+            return $this->sendSingleMessage($receivers, $sms);
+        }
+
+        // check if we're sending one message to multiple users
+        // or different messages to different users
+        if (is_array($receivers) && is_array($sms)) {
+            if (count($receivers) != count($sms)) {
+                throw new \Exception('Number of receivers and messages do not match.');
+            }
+        }
+
+        // send bulk sms
+        return $this->sendBulkMessages($receivers, $messages);
+    }
+
+    /**
+     * Processes configurations and sends a single message
+     *
+     * @param string $receiver
+     * @param string $message
+     * @throws \Exception
+     * @return Response
+     */
+    private function sendSingleMessage(string $receiver, string $message)
+    {
+        if (empty($sms)) {
+            throw new \Exception('Message can not be empty.');
+        }
+
+        $requestJson = [
+            ...Sms::new($receiver, $message)->toArray(),
+            'token' => $this->config,
+        ];
+        if ($this->senderID) {
+            $requestJson['sender_id'] = $this->senderID;
+        }
+        $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
+        $response = $this->client->request('post', $uri, [
+            'headers' => [
+                'Accept' => 'application/json'
+            ],
+            'json' => $requestJson,
+        ]);
+        return new Response($response);
+    }
     /**
      * Processes configurations and sends a single message
      *
@@ -85,7 +175,7 @@ final class Client implements ClientInterface
      * @throws \Exception
      * @return Response
      */
-    private function sendMessages(Sms $sms, ?callable $callback = null)
+    private function sendBulkMessages(string|array $messages)
     {
         if (!$this->configIsToken()) {
             throw new \Exception('Method not yet supported! Please use API Token.');
@@ -95,15 +185,17 @@ final class Client implements ClientInterface
             throw new \Exception('Message can not be empty.');
         }
 
+        $requestJson = [
+            ...$sms->toArray(),
+            'token' => $this->config,
+        ];
+        if ($this->senderID) $requestJson['sender_id'] = $this->senderID;
         $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
         $response = $this->client->request('post', $uri, [
             'headers' => [
                 'Accept' => 'application/json'
             ],
-            'json' => [
-                ...$sms->toArray(),
-                'token' => $this->config,
-            ],
+            'json' => $requestJson,
         ]);
         return new Response($response);
     }
