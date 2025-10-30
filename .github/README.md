@@ -1,17 +1,13 @@
 # Codel SMS PHP Wrapper
 
-[![CI Test Package](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml/badge.svg)](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml)
-
-![Packagist Version](https://img.shields.io/packagist/v/immachakata/codelsms?style=flat-square)
-![Packagist Downloads](https://img.shields.io/packagist/dt/immachakata/codelsms?style=flat-square)
-![Packagist License](https://img.shields.io/packagist/l/immachakata/codelsms?style=flat-square)
-
-# Codel Bulk Sms (Un-Official)
-This is an **unofficial** package for the [codel](https://sms.codel.tech) bulk sms (also known as [2waychat.com](https://2waychat.com)).
+[![CI Test Package](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml/badge.svg)](https://github.com/im-machakata/codels-sms/actions/workflows/ci-test.yml) 
+![Packagist Version](https://img.shields.io/packagist/v/immachakata/codelsms)
+![Packagist Downloads](https://img.shields.io/packagist/dt/immachakata/codelsms)
+![Packagist License](https://img.shields.io/packagist/l/immachakata/codelsms)
 
 ## How it works
 
-This version interacts with the core [Codel Sms API](https://2waychat.com) and has been updated to match the March 2025 api documentation update.
+This is an **unofficial** package for the [codel](https://sms.codel.tech) bulk sms (also known as [2waychat.com](https://2waychat.com)). This version interacts with the core [Codel Sms API](https://2waychat.com) and has been updated to match the March 2025 api documentation update.
 
 A PHP wrapper for the Codel SMS API, designed to make sending bulk SMS messages from your PHP applications simple and efficient.
 
