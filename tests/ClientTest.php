@@ -2,36 +2,107 @@
 
 use PHPUnit\Framework\TestCase;
 use IsaacMachakata\CodelSms\Client;
-use PHPUnit\Framework\Attributes\DataProvider;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ClientTest extends TestCase
 {
-    #[DataProvider('setConfigValues')]
-    public function testValidConfigurations($config)
+    private Client $client;
+    private MockHandler $mockHandler;
+
+    protected function setUp(): void
     {
-        $this->assertIsObject(new Client($config));
+        parent::setUp();
+        $this->mockHandler = new MockHandler();
+        $handlerStack = HandlerStack::create($this->mockHandler);
+        $mockGuzzleClient = new GuzzleClient(['handler' => $handlerStack]);
+
+        $this->client = new Client('a-valid-api-token-key');
+
+        // Use reflection to replace the Guzzle client with our mock
+        $reflection = new ReflectionClass($this->client);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($this->client, $mockGuzzleClient);
     }
-    #[DataProvider('invalidConfigValues')]
-    public function testInvalidConfigurationsThrowsErrors($config)
+
+    public function testInvalidConfigurationsThrowsErrors()
     {
         $this->expectException(MalformedConfigException::class);
-        new Client($config);
+        new Client('');
+        new Client();
     }
-    public static function setConfigValues(): array
+
+    public function testGetBalance()
     {
-        return [
-            ['a-valid-api-token-key'],
-        ];
+        // Queue a mock response
+        $this->mockHandler->append(new Response(200, [], json_encode(['sms_credit_balance' => 500])));
+
+        $balance = $this->client->getBalance();
+        $this->assertIsInt($balance);
+        $this->assertEquals(500, $balance);
     }
-    public static function invalidConfigValues(): array
+
+    public function testSendSingleMessage()
     {
-        return [
-            [''],
-            [array()],
-            [array('username' => 'admin')],
-            [array('username' => 'supersecret')],
-            [array('username' => 'admin', 'password' => 'supersecret')],
+        // Queue a mock response
+        $this->mockHandler->append(new Response(200, [], json_encode(['status' => 'success'])));
+        $response = $this->client->send('263771000001', 'Test message');
+        $this->assertInstanceOf(\IsaacMachakata\CodelSms\Response::class, $response);
+        $this->assertTrue($response->isOk());
+
+        $this->mockHandler->append(new Response(200, [], json_encode(['status' => 'failed'])));
+        $response = $this->client->send('263771000001', 'Test message');
+        $this->assertInstanceOf(\IsaacMachakata\CodelSms\Response::class, $response);
+        $this->assertFalse($response->isOk());
+    }
+
+    public function testSendBulkMessages()
+    {
+        // Queue a mock response
+        $fakeResponse = [
+            ['status' => [
+                'error_status' => 'success'
+            ]]
         ];
+
+        $this->mockHandler->append(new Response(200, [], json_encode($fakeResponse)));
+        $response = $this->client->send([
+            '263771000001',
+            '263772000002',
+        ], 'Test message');
+        $this->assertInstanceOf(\IsaacMachakata\CodelSms\Response::class, $response);
+        $this->assertTrue($response->isOk());
+
+        $this->mockHandler->append(new Response(200, [], json_encode($fakeResponse)));
+        $response = $this->client->send('263771000001,263771000002', 'Test message');
+        $this->assertInstanceOf(\IsaacMachakata\CodelSms\Response::class, $response);
+        $this->assertTrue($response->isOk());
+
+        $fakeResponse[0]['status']['error_status'] = "failed";
+        $this->mockHandler->append(new Response(200, [], json_encode($fakeResponse)));
+        $response = $this->client->send('263771000001,', 'Test message');
+        $this->assertInstanceOf(\IsaacMachakata\CodelSms\Response::class, $response);
+        $this->assertFalse($response->isOk());
+    }
+
+    public function testSendThrowsExceptionWithMismatchedReceiversAndMessages()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Number of receivers and messages do not match.');
+
+        $this->client->send(['263771000001'], ['message1', 'message2']);
+    }
+
+    public function testSendThrowsExceptionWithEmptyMessage()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Message(s) can not be empty.');
+
+        $this->client->send(['263771000001'], '');
     }
 }
