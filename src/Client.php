@@ -246,7 +246,11 @@ final class Client //implements ClientInterface
                 if (is_string($smsObject)) {
                     $smsObjects[] = Sms::new($receiver, $smsObject)->toArray();
                 } else if ($smsObject instanceof Sms) {
-                    $smsObjects[] = $smsObject->toArray();
+                    $sms = $smsObject->toArray();
+                    if(!$sms['destination']){
+                        $sms['destination'] = $receiver;
+                    }
+                    $smsObjects[] = $sms;
                 } else {
                     throw new \Exception('Callback function should return an Sms instance or message string.');
                 }
