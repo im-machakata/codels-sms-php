@@ -190,7 +190,7 @@ final class Client //implements ClientInterface
         ]);
         return new Response($response);
     }
-    
+
     /**
      * Processes configurations and sends a single message
      *
@@ -221,6 +221,9 @@ final class Client //implements ClientInterface
         // create sms objects for all messages
         $smsObjects = [];
         foreach ($receivers as $index => $receiver) {
+            // skip number if empty
+            if(!$receiver) continue;
+
             // sometimes the message can be a string
             if (is_string($messages)) {
                 $message = $messages;
