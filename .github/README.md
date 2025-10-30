@@ -59,7 +59,7 @@ if ($response->isOk()) {
 
 ### Sending Bulk SMS
 
-To send the same message to multiple recipients, you can pass an array of phone numbers or a comma-separated string of phone numbers.
+To send the same message to multiple recipients, you can pass an array of phone numbers or a comma-separated string of phone numbers, and an array of messages either indexed by phone number, or by index. Passing a string will result in all the users receiving the same message.
 
 **Using an array:**
 ```php
