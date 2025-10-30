@@ -48,6 +48,10 @@ To send a message to a single recipient, use the `send` method:
 ```php
 $response = $client->send('263771000001', 'Hello, this is a test message!');
 
+// you can also use the older method
+// $sms = Sms::new('263771000001', 'Hello, this is a test message!');
+// $response = $client->send($sms); 
+
 if ($response->isOk()) {
     echo "Message sent successfully!";
 }
@@ -83,11 +87,13 @@ $users = [
 
 $phoneNumbers = array_keys($users);
 
+// the message parameter is also passed here too to the callback function
 $client->setCallback(function ($receiver) use ($users) {
     $user = $users[$receiver];
     $message = "Dear {$user['name']}, your bill of ${$user['bill']} is due.";
 
     // you can either return the message string or an Sms::new instance as demonstrated here.
+    // return $message;
     return Sms::new($receiver, $message);
 });
 
