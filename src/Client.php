@@ -135,9 +135,9 @@ final class Client //implements ClientInterface
      * @param string|array $receivers
      * @param string|array $messages
      */
-    private function sendMessages(string|array $receivers, string|array $messages)
+    private function sendMessages(string|array $receivers, string|array|null $messages)
     {
-        if (empty($messages)) {
+        if (empty($messages) && !$this->templateCallback) {
             throw new \Exception('Message(s) can not be empty.');
         }
 
@@ -197,9 +197,9 @@ final class Client //implements ClientInterface
      * @param Sms $sms
      * @throws \Exception
      */
-    private function sendBulkMessages(array $receivers, string|array $messages)
+    private function sendBulkMessages(array $receivers, string|array|null $messages)
     {
-        if (empty($messages)) {
+        if (empty($messages) && !$this->templateCallback) {
             throw new \Exception('Message can not be empty.');
         }
 
@@ -235,6 +235,8 @@ final class Client //implements ClientInterface
                 // sometimes the message can be an array of messages, indexed by index
             } else if (is_array($messages) && array_is_list($messages)) {
                 $message = $messages[$index];
+            } else {
+                $message = null;
             }
 
             if ($this->templateCallback) {
