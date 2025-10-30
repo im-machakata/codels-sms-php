@@ -27,23 +27,30 @@ class Response implements ResponseInterface
     }
     public function getMessageStatus(): string
     {
-        if($this->bulkMessages){
+        if ($this->bulkMessages) {
             return strtoupper($this->responseBody[0]->status->error_status);
         }
         return !empty($this->responseBody) ? $this->responseBody->status : 'FAILED';
     }
     public function getMessageId(): string|null
     {
-        if($this->bulkMessages) return null;
+        if ($this->bulkMessages) return null;
         return !empty($this->responseBody) ? $this->responseBody->messageId : null;
     }
     public function messageIsScheduled(): bool
     {
-        if($this->bulkMessages) return false;
+        if ($this->bulkMessages) return false;
         return !empty($this->responseBody) ? $this->responseBody->scheduled : false;
     }
     public function isOk(): bool
     {
         return strtoupper($this->getMessageStatus()) != "FAILED";
+    }
+    public function getBody() : array|object
+    {
+        if ($this->bulkMessages) {
+            return $this->responseBody;
+        }
+        return $this->responseBody;
     }
 }
