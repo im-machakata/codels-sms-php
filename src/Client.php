@@ -132,10 +132,8 @@ final class Client //implements ClientInterface
 
         // check if we're sending one message to multiple users
         // or different messages to different users
-        if (is_array($receivers) && is_array($messages)) {
-            if (count($receivers) != count($messages)) {
-                throw new \Exception('Number of receivers and messages do not match.');
-            }
+        if (is_array($messages) && count($receivers) !== count($messages)) {
+            throw new \Exception('Number of receivers and messages do not match.');
         }
 
         // send bulk sms
@@ -219,10 +217,12 @@ final class Client //implements ClientInterface
                 // callback function should return an Sms instance
                 $smsObject = call_user_func($this->templateCallback, $receiver, $message);
 
-                if ($smsObject instanceof Sms) {
+                if (is_string($smsObject)) {
+                    $smsObjects[] = Sms::new($receiver, $smsObject)->toArray();
+                } else if ($smsObject instanceof Sms) {
                     $smsObjects[] = $smsObject->toArray();
                 } else {
-                    throw new \Exception('Callback function should return an Sms instance.');
+                    throw new \Exception('Callback function should return an Sms instance or message string.');
                 }
             } else {
                 $smsObjects[] = Sms::new($receiver, $message)->toArray();
