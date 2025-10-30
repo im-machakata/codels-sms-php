@@ -7,6 +7,7 @@ use IsaacMachakata\CodelSms\Exception\MalformedConfigException;
 
 /**
  * Allows you to send sms's from your PHP app.
+ * 
  * @throws MalformedConfigException
  * @final
  */
@@ -34,6 +35,12 @@ final class Client //implements ClientInterface
         }
     }
 
+    /** 
+     * Uses set sender id instead of the default one.
+     * 
+     * @param string $senderID
+     * @return Client
+     */
     public function setSenderId(string $senderID)
     {
         $this->senderID = $senderID;
@@ -41,7 +48,11 @@ final class Client //implements ClientInterface
     }
 
     /**
+     * Customize each message or phone number before sending. 
+     * Callback must return either the final message or an Sms instance.
+     * 
      * @param callable $templateCallback
+     * @return Client
      */
     public function setCallback(callable $templateCallback)
     {
@@ -51,6 +62,7 @@ final class Client //implements ClientInterface
 
     /**
      * Makes a request to the server and tries to send the message.
+     * 
      * @param string|array|Sms $receivers
      * @param string|array $messages     
      * @return Response
@@ -73,6 +85,7 @@ final class Client //implements ClientInterface
 
     /**
      * Gets the current credit balance for the account.
+     * 
      * @return int|object
      */
     public function getBalance()
@@ -95,6 +108,7 @@ final class Client //implements ClientInterface
 
     /**
      * Checks if provided configurations matche the expected format
+     * 
      * @throws MalformedConfigException
      * @return void
      */
@@ -107,7 +121,7 @@ final class Client //implements ClientInterface
 
     /**
      * Checks if the user provided an API Token or login details
-     *
+     * 
      * @return bool
      */
     private function configIsToken(): bool
@@ -115,6 +129,12 @@ final class Client //implements ClientInterface
         return is_string($this->config);
     }
 
+    /**
+     * Processes messages and receivers, before deciding which method to use.
+     *
+     * @param string|array $receivers
+     * @param string|array $messages
+     */
     private function sendMessages(string|array $receivers, string|array $messages)
     {
         if (empty($messages)) {
@@ -170,6 +190,7 @@ final class Client //implements ClientInterface
         ]);
         return new Response($response);
     }
+    
     /**
      * Processes configurations and sends a single message
      *
