@@ -44,6 +44,6 @@ class Response implements ResponseInterface
     }
     public function isOk(): bool
     {
-        return $this->getMessageStatus() != "FAILED";
+        return strtoupper($this->getMessageStatus()) != "FAILED";
     }
 }
