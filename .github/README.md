@@ -5,15 +5,13 @@
 ![Packagist Downloads](https://img.shields.io/packagist/dt/immachakata/codelsms)
 ![Packagist License](https://img.shields.io/packagist/l/immachakata/codelsms)
 
-## How it works
-
-This is an **unofficial** package for the [codel](https://sms.codel.tech) bulk sms (also known as [2waychat.com](https://2waychat.com)). This version interacts with the core [Codel Sms API](https://2waychat.com) and has been updated to match the March 2025 api documentation update.
-
-A PHP wrapper for the Codel SMS API, designed to make sending bulk SMS messages from your PHP applications simple and efficient.
+This is an **unofficial** package for the [codel](https://sms.codel.tech) bulk sms (also known as [2waychat.com](https://2waychat.com)) designed to make sending bulk SMS messages from your PHP applications simple and efficient. 
 
 ## How It Works
 
-The library is built on top of Guzzle, a popular PHP HTTP client, to handle all communication with the Codel SMS API. It provides a simple, expressive API for sending single and bulk SMS messages.
+This wrapper interacts with the core [Codel Sms API](https://2waychat.com) and has been updated to match the March 2025 api documentation update.
+
+It is built on top of Guzzle, a popular PHP HTTP client, to handle all communication with the Codel SMS API and provides a simple, expressive API for sending single and bulk SMS messages.
 
 - **`Client` Class:** This is the main entry point of the library. You instantiate it with your API token, and it handles all the interactions with the Codel SMS API.
 - **`Sms` Class:** A data object that represents a single SMS message, containing the destination phone number and the message text.
