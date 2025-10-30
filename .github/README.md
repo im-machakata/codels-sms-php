@@ -46,13 +46,15 @@ To send a message to a single recipient, use the `send` method:
 ```php
 $response = $client->send('263771000001', 'Hello, this is a test message!');
 
-// you can also use the older method
-// $sms = Sms::new('263771000001', 'Hello, this is a test message!');
-// $response = $client->send($sms); 
-
 if ($response->isOk()) {
     echo "Message sent successfully!";
 }
+```
+You can also use the older method
+
+```php
+$sms = Sms::new('263771000001', 'Hello, this is a test message!');
+$response = $client->send($sms); 
 ```
 
 ### Sending Bulk SMS
@@ -73,7 +75,7 @@ $response = $client->send($phoneNumbers, 'This is a bulk message to everyone.');
 
 ### Sending Personalized Messages in Bulk
 
-For more advanced use cases, you can send different messages to different recipients in a single API call. Use the `setCallback` method to define a template for your messages. The callback receives the phone number and should return an `Sms` object.
+For more advanced use cases, you can send different messages to different recipients in a single API call. Use the `setCallback` method to define a template for your messages. The callback receives the phone number and should return either an `Sms` object or a string - which is the message.
 
 ```php
 use IsaacMachakata\CodelSms\Sms;
@@ -86,17 +88,13 @@ $users = [
 $phoneNumbers = array_keys($users);
 
 // the message parameter is also passed here too to the callback function
-$client->setCallback(function ($receiver) use ($users) {
-    $user = $users[$receiver];
-    $message = "Dear {$user['name']}, your bill of ${$user['bill']} is due.";
-
-    // you can either return the message string or an Sms::new instance as demonstrated here.
-    // return $message;
-    return Sms::new($receiver, $message);
+$client->setCallback(function ($receiver, $data) {
+    extract($data);
+    return Sms::new("Dear $name, your bill of \$$bill is due.");
 });
 
 // The message parameter can be skipped here
-$response = $client->send($phoneNumbers); 
+$response = $client->send($phoneNumbers, $users); 
 ```
 
 ### Setting a Sender ID
