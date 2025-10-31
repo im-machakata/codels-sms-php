@@ -150,12 +150,6 @@ final class Client //implements ClientInterface
             return $this->sendSingleMessage($receivers, $messages);
         }
 
-        // check if we're sending one message to multiple users
-        // or different messages to different users
-        if (is_array($messages) && count($receivers) !== count($messages)) {
-            throw new \Exception('Number of receivers and messages do not match.');
-        }
-
         // send bulk sms
         return $this->sendBulkMessages($receivers, $messages);
     }
@@ -203,7 +197,7 @@ final class Client //implements ClientInterface
             throw new \Exception('Message can not be empty.');
         }
 
-        if (is_array($messages) && (count($receivers) !== count($messages))) {
+        if (is_array($messages) && (count($receivers) > count($messages))) {
             throw new \Exception('Number of receivers and messages do not match.');
         }
 
