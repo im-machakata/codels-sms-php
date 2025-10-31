@@ -61,6 +61,8 @@ $response = $client->send($sms);
 
 To send the same message to multiple recipients, you can pass an array of phone numbers or a comma-separated string of phone numbers, and an array of messages either indexed by phone number, or by index. Passing a string will result in all the users receiving the same message.
 
+> **NB**: A sender id is required when sending multiple messages and an exception will be thrown if one is not provided.
+
 **Using an array:**
 ```php
 $phoneNumbers = ['263771000001', '263772000002', '263773000003'];
@@ -109,6 +111,7 @@ You can also set the sender ID directly in the constructor:
 
 ```php
 $client = new Client($apiToken, 'MyCompany');
+$response = $client->send('263771000001', 'Message from MyCompany.');
 ```
 
 ### Checking Your Balance
