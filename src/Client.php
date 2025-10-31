@@ -203,6 +203,10 @@ final class Client //implements ClientInterface
             throw new \Exception('Number of receivers and messages do not match.');
         }
 
+        if (empty($this->senderID)) {
+            throw new \Exception('Sender ID is required for bulk messages.');
+        }
+
         $requestJson = [
             'auth' => [
                 'token' => $this->config,
