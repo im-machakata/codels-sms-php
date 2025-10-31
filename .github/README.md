@@ -89,8 +89,7 @@ $phoneNumbers = array_keys($users);
 
 // the message parameter is also passed here too to the callback function
 $client->setCallback(function ($receiver, $data) {
-    extract($data);
-    return Sms::new("Dear $name, your bill of \$$bill is due.");
+    return Sms::new("Dear {$data['name']}, your bill of \${$data['bill']} is due.");
 });
 
 // The message parameter can be skipped here
