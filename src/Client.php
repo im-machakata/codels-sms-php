@@ -174,8 +174,10 @@ final class Client //implements ClientInterface
         ];
         if (!empty($this->senderID)) {
             $requestJson['sender_id'] = $this->senderID;
+            $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
+        } else {
+            $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT_DEFAULT_SENDER;
         }
-        $uri = Urls::BASE_URL . Urls::SINGLE_SMS_ENDPOINT;
         $response = $this->client->request('post', $uri, [
             'headers' => [
                 'Accept' => 'application/json'
