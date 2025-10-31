@@ -216,7 +216,7 @@ final class Client //implements ClientInterface
         $smsObjects = [];
         foreach ($receivers as $index => $receiver) {
             // skip number if empty
-            if(!$receiver) continue;
+            if (!$receiver) continue;
 
             // sometimes the message can be a string
             if (is_string($messages)) {
@@ -240,7 +240,7 @@ final class Client //implements ClientInterface
                 if (is_string($smsObject)) {
                     $smsObjects[] = Sms::new($receiver, $smsObject)->toArray();
                 } else if ($smsObject instanceof Sms) {
-                    if(!$smsObject->toArray()['destination']){
+                    if (!$smsObject->toArray()['destination']) {
                         $smsObject = $smsObject::setReceiver($receiver);
                     }
                     $smsObjects[] = $smsObject->toArray();
@@ -252,6 +252,17 @@ final class Client //implements ClientInterface
             }
         }
         $requestJson['payload']['messages'] = $smsObjects;
+
+        // check if there are any messages to send
+        if (count($requestJson['payload']['messages']) === 0) {
+            throw new \Exception('No messages to send.');
+        }
+
+        // check if there is only one message to send
+        if (count($requestJson['payload']['messages']) === 1) {
+            $message = $requestJson['payload']['messages'][0];
+            return $this->sendSingleMessage($message['destination'], $message['messageText']);
+        }
 
         $uri = Urls::BASE_URL . Urls::MULTIPLE_SMS_ENDPOINT;
         $response = $this->client->request('post', $uri, [
