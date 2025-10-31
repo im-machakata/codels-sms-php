@@ -48,6 +48,18 @@ class Sms
     }
 
     /**
+     * Sets the receivers phone number.
+     *
+     * @param string $destination
+     * @return self
+     */
+    public static function setReceiver(string $destination)
+    {
+        self::$destination = Utils::formatNumber($destination);
+        return new Sms;
+    }
+
+    /**
      * Prepares the variables into an array
      *
      * @return array
