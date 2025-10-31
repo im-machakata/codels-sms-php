@@ -70,11 +70,16 @@ class ClientTest extends TestCase
             ]]
         ];
 
-        $this->mockHandler->append(new Response(200, [], json_encode($fakeResponse)));
-        $response = $this->client->send([
+        $phoneNumbers = [
             '263771000001',
             '263772000002',
-        ], 'Test message');
+        ];
+        $this->expectException(\Exception::class);
+        $response = $this->client->send($phoneNumbers, 'Test message');
+
+        $this->mockHandler->append(new Response(200, [], json_encode($fakeResponse)));
+        $this->client->setSenderId('test-sender');
+        $response = $this->client->send($phoneNumbers, 'Test message');
         $this->assertInstanceOf(\IsaacMachakata\CodelSms\Response::class, $response);
         $this->assertTrue($response->isOk());
 
@@ -94,8 +99,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Number of receivers and messages do not match.');
-
-        $this->client->send(['263771000001'], ['message1', 'message2']);
+        $this->client->send(['263771000001', '2637710000002','2637710000003'], ['message1', 'message2']);
     }
 
     public function testSendThrowsExceptionWithEmptyMessage()
