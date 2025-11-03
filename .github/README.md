@@ -149,4 +149,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Author
 
-- **[Isaac Machakata](https://github.com/im-machakata)** - PHP Developer
+- **[Isaac Machakata](https://github.com/immachakata)** - PHP Developer
